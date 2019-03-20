@@ -136,11 +136,11 @@ namespace efanna{
     void saveResults(char* filename){
        std::ofstream out(filename,std::ios::binary);
        std::vector<std::vector<int>>::iterator i;
-//std::cout<<nn_results.size()<<std::endl;
+//std::cerr<<nn_results.size()<<std::endl;
        for(i = nn_results.begin(); i!= nn_results.end(); i++){
          std::vector<int>::iterator j;
          int dim = i->size();
-//std::cout<<dim<<std::endl;
+//std::cerr<<dim<<std::endl;
          out.write((char*)&dim, sizeof(int));
          for(j = i->begin(); j != i->end(); j++){
            int id = *j;
@@ -262,7 +262,7 @@ SearchParams SP;
 
                   for(int j=0; j <Jter ; j++){
                 	  unsigned int nn = pool[seg*SP.extend_to+j];
-                	  //if(nn>=base_n) std::cout << "query:" << cur << " Init "<< nn << std::endl;
+                	  //if(nn>=base_n) std::cerr << "query:" << cur << " Init "<< nn << std::endl;
                       if(!tbflag.test(nn)){
                         newflag.set(nn);
                         Candidate<DataType> c(nn, distance_->compare(qNow, features_.get_row(nn), features_.get_cols()));
@@ -277,12 +277,12 @@ SearchParams SP;
                       ids.clear();
                       typename CandidateHeap::reverse_iterator it = Candidates.rbegin();
                       for(unsigned j = 0; j < SP.extend_to && it != Candidates.rend(); j++,it++){
-                    	//  if(it->row_id>=base_n) std::cout<<"query:"<< cur<<" Judge node  "<<it->row_id<<std::endl;
+                    	//  if(it->row_id>=base_n) std::cerr<<"query:"<< cur<<" Judge node  "<<it->row_id<<std::endl;
                         if(newflag.test(it->row_id)){
                           newflag.reset(it->row_id);
                           typename CandidateHeap::reverse_iterator neighbor = knn_graph[it->row_id].rbegin();
                           for(; neighbor != knn_graph[it->row_id].rend(); neighbor++){
-                        	//  if(neighbor->row_id>=base_n) std::cout<<"query:"<< cur<<" Judge neighbor  "<<neighbor->row_id<<std::endl;
+                        	//  if(neighbor->row_id>=base_n) std::cerr<<"query:"<< cur<<" Judge neighbor  "<<neighbor->row_id<<std::endl;
                             if(tbflag.test(neighbor->row_id))continue;
                             tbflag.set(neighbor->row_id);
                             ids.push_back(neighbor->row_id);
@@ -436,18 +436,18 @@ SearchParams SP;
       }
     }
     void refineGraph(){
-      std::cout << " refineGraph" << std::endl;
+      std::cerr << " refineGraph" << std::endl;
       int iter = 0;
       clock_t s,f;
       s = clock();unsigned int l=100;
       while(iter++ < params_.build_epoches){
-        join();//std::cout<<"after join"<<std::endl;
+        join();//std::cerr<<"after join"<<std::endl;
         update(l);
         f = clock();
-        std::cout << "iteration "<< iter << " time: "<< (f-s)*1.0/CLOCKS_PER_SEC<<" seconds"<< std::endl;
+        std::cerr << "iteration "<< iter << " time: "<< (f-s)*1.0/CLOCKS_PER_SEC<<" seconds"<< std::endl;
       }
       //calculate_norm();
-std::cout << "saving graph" << std::endl;
+std::cerr << "saving graph" << std::endl;
   /*    knn_graph.clear();
 	
       for(size_t i = 0; i < nhoods.size(); i++){

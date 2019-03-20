@@ -42,18 +42,18 @@ public:
 	KDTreeUbIndex(const Matrix<DataType>& dataset, const Distance<DataType>* d, const IndexParams& params = KDTreeUbIndexParams(true,4)) :
 		BaseClass(dataset,d,params)
 	{
-		std::cout<<"kdtree ub initial"<<std::endl;
+		std::cerr<<"kdtree ub initial"<<std::endl;
 		ExtraParamsMap::const_iterator it = params_.extra_params.find("trees");
 		if(it != params_.extra_params.end()){
 			TreeNum = (it->second).int_val;
 #ifdef INFO
-			std::cout << "Using kdtree to build "<< TreeNum << " trees in total" << std::endl;
+			std::cerr << "Using kdtree to build "<< TreeNum << " trees in total" << std::endl;
 #endif
 		}
 		else{
 			TreeNum = 4;
 #ifdef INFO
-			std::cout << "Using kdtree to build "<< TreeNum << " trees in total" << std::endl;
+			std::cerr << "Using kdtree to build "<< TreeNum << " trees in total" << std::endl;
 #endif
 		}
 		SP.tree_num = TreeNum;
@@ -62,13 +62,13 @@ public:
 		if(it != params_.extra_params.end()){
 			TreeNumBuild = (it->second).int_val;
 #ifdef INFO
-			std::cout << "Building kdtree graph with "<< TreeNumBuild <<" trees"<< std::endl;
+			std::cerr << "Building kdtree graph with "<< TreeNumBuild <<" trees"<< std::endl;
 #endif
 		}
 		else{
 			TreeNumBuild = TreeNum;
 #ifdef INFO
-			std::cout << "Building kdtree graph with "<< TreeNumBuild <<" trees"<< std::endl;
+			std::cerr << "Building kdtree graph with "<< TreeNumBuild <<" trees"<< std::endl;
 #endif
 		}
 
@@ -76,13 +76,13 @@ public:
 		if(it != params_.extra_params.end()){
 			ml = (it->second).int_val;
 #ifdef INFO
-			std::cout << "Building kdtree initial index with merge level "<< ml  << std::endl;
+			std::cerr << "Building kdtree initial index with merge level "<< ml  << std::endl;
 #endif
 		}
 		else{
 			ml = -1;
 #ifdef INFO
-			std::cout << "Building kdtree initial index with max merge level "<< std::endl;
+			std::cerr << "Building kdtree initial index with max merge level "<< std::endl;
 #endif
 		}
 		max_deepth = 0x0fffffff;
@@ -100,13 +100,13 @@ public:
 		f = clock();
 #endif
 
-		std::cout << "initial graph finised"<< std::endl;
+		std::cerr << "initial graph finised"<< std::endl;
 #ifdef INFO
-		std::cout << "initial graph using time: "<< (f-s)*1.0/CLOCKS_PER_SEC<<" seconds"<< std::endl;
+		std::cerr << "initial graph using time: "<< (f-s)*1.0/CLOCKS_PER_SEC<<" seconds"<< std::endl;
 #endif
 
 		if(error_flag){
-			std::cout << "merge level deeper than tree, max merge deepth is" << max_deepth-1<<std::endl;
+			std::cerr << "merge level deeper than tree, max merge deepth is" << max_deepth-1<<std::endl;
 			return;
 		}
 		refineGraph();
@@ -138,7 +138,7 @@ public:
 	//algorithms copy and rewrite from flann
 	void loadTrees(char* filename){
 		std::ifstream in(filename, std::ios::binary|std::ios::in);
-		if(!in.is_open()){std::cout<<"open file error"<<std::endl;exit(-10087);}
+		if(!in.is_open()){std::cerr<<"open file error"<<std::endl;exit(-10087);}
 		unsigned int K,tree_num;
 		size_t dim,num;
 
@@ -174,7 +174,7 @@ public:
 
 
 			}
-			//std::cout<<"build "<<i<<std::endl;
+			//std::cerr<<"build "<<i<<std::endl;
 			struct Node *root = DepthFirstBuildTree(tree_nodes);
 			if(root==NULL){ exit(-11); }
 			tree_roots_.push_back(root);
@@ -199,7 +199,7 @@ public:
 		size_t num = features_.get_rows();
 		size_t dim = features_.get_cols();
 		std::fstream out(filename, std::ios::binary|std::ios::out);
-		if(!out.is_open()){std::cout<<"open file error"<<std::endl;exit(-10086);}
+		if(!out.is_open()){std::cerr<<"open file error"<<std::endl;exit(-10086);}
 		unsigned int tree_num = tree_roots_.size();
 
 		//write file head
@@ -228,10 +228,10 @@ public:
 			out.write((char *)&(node_num), sizeof(int));
 
 			out.seekp(0,std::ios::end);
-			//std::cout<<"tree: "<<cnt++<<" written, node: "<<node_num<<" at offset " << offset_node_num <<std::endl;
+			//std::cerr<<"tree: "<<cnt++<<" written, node: "<<node_num<<" at offset " << offset_node_num <<std::endl;
 		}
 
-		if(LeafLists.size()!=tree_num){ std::cout << "leaf_size!=tree_num" << std::endl; exit(-6); }
+		if(LeafLists.size()!=tree_num){ std::cerr << "leaf_size!=tree_num" << std::endl; exit(-6); }
 
 		for(unsigned int i=0; i<tree_num; i++){
 			for(unsigned int j=0;j<num;j++){
@@ -288,7 +288,7 @@ public:
          out.write((char*)&id, sizeof(int));
        }
      }//meansize /= knn_graph.size();
-     //std::cout << "size mean " << meansize << std::endl;
+     //std::cerr << "size mean " << meansize << std::endl;
      out.close();
     }
 	 */
@@ -355,17 +355,17 @@ public:
 			getNeighbors_kgraph(searchK, query);
 			break;
 		default:
-			std::cout<<"no such searching method"<<std::endl;
+			std::cerr<<"no such searching method"<<std::endl;
 		}
 
 	}
 
 	void getNeighbors_nnexp(size_t K, const Matrix<DataType>& query){
 #ifdef INFO
-		std::cout<<"using tree num "<< SP.tree_num<<std::endl;
+		std::cerr<<"using tree num "<< SP.tree_num<<std::endl;
 #endif
 		if(SP.tree_num > tree_roots_.size()){
-			std::cout<<"wrong tree number"<<std::endl;return;
+			std::cerr<<"wrong tree number"<<std::endl;return;
 		}
 
 		nn_results.clear();
@@ -495,10 +495,10 @@ public:
 
 	void getNeighbors_kgraph(size_t searchK, const Matrix<DataType>& query){
 #ifdef INFO
-		std::cout<<"using tree num "<< SP.tree_num<<std::endl;
+		std::cerr<<"using tree num "<< SP.tree_num<<std::endl;
 #endif
 		if(SP.tree_num > tree_roots_.size()){
-			std::cout<<"wrong tree number"<<std::endl;return;
+			std::cerr<<"wrong tree number"<<std::endl;return;
 		}
 
 		nn_results.clear();
@@ -660,7 +660,7 @@ public:
 		int left_cnt = DepthFirstWrite(out, root->Lchild);
 		int right_cnt = DepthFirstWrite(out, root->Rchild);
 
-		//std::cout << root->StartIdx <<":" << root->EndIdx<< std::endl;
+		//std::cerr << root->StartIdx <<":" << root->EndIdx<< std::endl;
 		out.write((char *)&(root->DivDim), sizeof(root->DivDim));
 		out.write((char *)&(root->DivVal), sizeof(root->DivVal));
 		out.write((char *)&(root->StartIdx), sizeof(root->StartIdx));
@@ -693,14 +693,14 @@ public:
 
 		}
 		if(root_serial.size()!=1){
-			std::cout << "Error constructing trees" << std::endl;
+			std::cerr << "Error constructing trees" << std::endl;
 			return NULL;
 		}
 		return root_serial[0];
 	}
 	void read_data(char *filename){
 		std::ifstream in(filename, std::ios::binary|std::ios::in);
-		if(!in.is_open()){std::cout<<"open file error"<<std::endl;exit(-10087);}
+		if(!in.is_open()){std::cerr<<"open file error"<<std::endl;exit(-10087);}
 		unsigned int K,tree_num;
 		size_t dim,num;
 
@@ -735,7 +735,7 @@ public:
 
 
 			}
-			//std::cout<<"build "<<i<<std::endl;
+			//std::cerr<<"build "<<i<<std::endl;
 			struct Node *root = DepthFirstBuildTree(tree_nodes);
 			if(root==NULL){ exit(-11); }
 			tree_roots_.push_back(root);
@@ -770,7 +770,7 @@ public:
 	}
 	void save_data(char *filename, unsigned int K, size_t num, size_t dim){
 		std::fstream out(filename, std::ios::binary|std::ios::out);
-		if(!out.is_open()){std::cout<<"open file error"<<std::endl;exit(-10086);}
+		if(!out.is_open()){std::cerr<<"open file error"<<std::endl;exit(-10086);}
 		unsigned int tree_num = tree_roots_.size();
 
 		//write file head
@@ -799,10 +799,10 @@ public:
 			out.write((char *)&(node_num), sizeof(int));
 
 			out.seekp(0,std::ios::end);
-			//std::cout<<"tree: "<<cnt++<<" written, node: "<<node_num<<" at offset " << offset_node_num <<std::endl;
+			//std::cerr<<"tree: "<<cnt++<<" written, node: "<<node_num<<" at offset " << offset_node_num <<std::endl;
 		}
 
-		if(LeafLists.size()!=tree_num){ std::cout << "leaf_size!=tree_num" << std::endl; exit(-6); }
+		if(LeafLists.size()!=tree_num){ std::cerr << "leaf_size!=tree_num" << std::endl; exit(-6); }
 
 		for(unsigned int i=0; i<tree_num; i++){
 			for(unsigned int j=0;j<num;j++){
@@ -812,7 +812,7 @@ public:
 
 		//write knn-graph
 
-		if(knn_graph.size()!=num){std::cout << "Error:" << std::endl; exit(-1);}
+		if(knn_graph.size()!=num){std::cerr << "Error:" << std::endl; exit(-1);}
 		for(size_t i = 0; i < knn_graph.size(); i++){
 			typename CandidateHeap::reverse_iterator it = knn_graph[i].rbegin();
 			for(size_t j =0; j < K && it!= knn_graph[i].rend(); j++,it++ ){
@@ -1137,7 +1137,7 @@ protected:
 
 	void DFSbuild(Node* node, std::mt19937& rng, unsigned* indices, unsigned count, unsigned offset){
 		//omp_set_lock(&rootlock);
-		//std::cout<<node->treeid<<":"<<offset<<":"<<count<<std::endl;
+		//std::cerr<<node->treeid<<":"<<offset<<":"<<count<<std::endl;
 		//omp_unset_lock(&rootlock);
 		if(count <= params_.TNS){
 			node->DivDim = -1;
@@ -1170,23 +1170,23 @@ protected:
 		if(node->Lchild !=NULL){
 			DFStest(++level, node->DivDim, node->Lchild);
 			//if(level > 15)
-			std::cout<<"dim: "<<node->DivDim<<"--cutval: "<<node->DivVal<<"--S: "<<node->StartIdx<<"--E: "<<node->EndIdx<<" TREE: "<<node->treeid<<std::endl;
+			std::cerr<<"dim: "<<node->DivDim<<"--cutval: "<<node->DivVal<<"--S: "<<node->StartIdx<<"--E: "<<node->EndIdx<<" TREE: "<<node->treeid<<std::endl;
 			if(node->Lchild->Lchild ==NULL){
 				std::vector<unsigned>& tmp = LeafLists[node->treeid];
 				for(unsigned i = node->Rchild->StartIdx; i < node->Rchild->EndIdx; i++)
-					std::cout<<features_.get_row(tmp[i])[node->DivDim]<<" ";
-				std::cout<<std::endl;
+					std::cerr<<features_.get_row(tmp[i])[node->DivDim]<<" ";
+				std::cerr<<std::endl;
 			}
 		}
 		else if(node->Rchild !=NULL){
 			DFStest(++level, node->DivDim, node->Rchild);
 		}
 		else{
-			std::cout<<"dim: "<<dim<<std::endl;
+			std::cerr<<"dim: "<<dim<<std::endl;
 			std::vector<unsigned>& tmp = LeafLists[node->treeid];
 			for(unsigned i = node->StartIdx; i < node->EndIdx; i++)
-				std::cout<<features_.get_row(tmp[i])[dim]<<" ";
-			std::cout<<std::endl;
+				std::cerr<<features_.get_row(tmp[i])[dim]<<" ";
+			std::cerr<<std::endl;
 		}
 	}
 	void buildTrees(){
@@ -1267,7 +1267,7 @@ protected:
 		for(unsigned i = 0; i < ActiveSet.size(); i++){
 			Node* node = ActiveSet[i];
 			//omp_set_lock(&rootlock);
-			//std::cout<<i<<":"<<node->EndIdx-node->StartIdx<<std::endl;
+			//std::cerr<<i<<":"<<node->EndIdx-node->StartIdx<<std::endl;
 			//omp_unset_lock(&rootlock);
 			std::mt19937 rng(seed ^ omp_get_thread_num());
 			std::vector<unsigned>& myids = LeafLists[node->treeid];
@@ -1355,7 +1355,7 @@ protected:
 		for(unsigned i = 0; i < ActiveSet.size(); i++){
 			Node* node = ActiveSet[i];
 			//omp_set_lock(&rootlock);
-			//std::cout<<i<<":"<<node->EndIdx-node->StartIdx<<std::endl;
+			//std::cerr<<i<<":"<<node->EndIdx-node->StartIdx<<std::endl;
 			//omp_unset_lock(&rootlock);
 			std::mt19937 rng(seed ^ omp_get_thread_num());
 			std::vector<unsigned>& myids = LeafLists[node->treeid];
@@ -1405,7 +1405,7 @@ protected:
 				}
 
 				//omp_set_lock(&rootlock);
-				//if(knn_graph[n].size() < nhood.L)std::cout<<n<<":"<<knn_graph[n].size()<<std::endl;
+				//if(knn_graph[n].size() < nhood.L)std::cerr<<n<<":"<<knn_graph[n].size()<<std::endl;
 				//omp_unset_lock(&rootlock);
 				unsigned i = 0;
 				typename CandidateHeap::reverse_iterator it = knn_graph[n].rbegin();
@@ -1423,7 +1423,7 @@ protected:
 		}
 		knn_graph.clear();
 #ifdef INFO
-		std::cout<<"initial completed"<<std::endl;
+		std::cerr<<"initial completed"<<std::endl;
 #endif
 	}
 
