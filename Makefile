@@ -30,8 +30,11 @@ $(SAMPLES): %: %.o
 %.o: %.cc $(HEADERS)
 	$(GXX) $(CPFLAGS) $(INCLUDES) -c $*.cc -o $@
 
+annbenchmark_wrapper: wrapper/wrapper.o wrapper/protocol.o
+	$(GXX) $(LDFLAGS) -o $@ $^
+
 clean:
-	rm -rf $(OBJS)
 	rm -rf $(SHARED_LIB)
 	rm -rf $(SAMPLES)
-	rm -rf $(SAMPLE_OBJS)
+	rm -f annbenchmark_wrapper
+	find . -type f -name '*.o' -delete
