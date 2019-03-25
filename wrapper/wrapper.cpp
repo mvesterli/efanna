@@ -29,7 +29,7 @@ static int L = 30;
 
 static int S = 10;
 
-static std::string distance = "euclidean";
+static std::string metric = "euclidean";
 
 bool configure(const char* var, const char* val) {
   if (strcmp(var, "count") == 0) {
@@ -102,8 +102,9 @@ bool configure(const char* var, const char* val) {
       S = k;
       return true;
     }
-  } else if (strcmp(var, "distance") == 0) {
-    distance = std::string(val);
+  } else if (strcmp(var, "metric") == 0) {
+    metric = std::string(val);
+    return true;
   } else return false;
 }
 
@@ -149,8 +150,10 @@ void end_train(void) {
 
     efanna::Matrix<float> dataset(pointset.size(), d, raw_data);
     efanna::Distance<float>* distance_function;
-    if (distance == "euclidean") {
+    if (metric == "euclidean") {
         distance_function = new efanna::L2DistanceAVX<float>();
+    } else if (metric == "angular") {
+        distance_function = new efanna::CosineSimilarityAVX<float>();
     } else {
         throw "Unsupported distance function";
     }

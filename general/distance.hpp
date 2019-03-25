@@ -377,5 +377,46 @@ ResultType compare(const T* a, const T* b, size_t size) const{
     	return ret;
     }
 };
+
+template<typename T>
+class CosineSimilarityAVX : public Distance<T> {
+public:
+    typedef T ResultType;
+
+    ResultType compare(const T* a, const T* b, size_t size) const{
+        // Number of float values that fit into a 256 bit vector.
+        const static unsigned int VALUES_PER_VEC = 8;
+
+        __m256 res = _mm256_mul_ps(
+            _mm256_loadu_ps(&a[0]),
+            _mm256_loadu_ps(&b[0]));
+        for (
+            unsigned int i=VALUES_PER_VEC;
+            i < size;
+            i += VALUES_PER_VEC
+        ) {
+            __m256 tmp = _mm256_mul_ps(
+                _mm256_loadu_ps(&a[i]),
+                _mm256_loadu_ps(&b[i]));
+            res = _mm256_add_ps(res, tmp);
+        }
+        alignas(32) float stored[VALUES_PER_VEC];
+        _mm256_store_ps(stored, res);
+        ResultType ret = 0;
+        for (unsigned i=0; i<VALUES_PER_VEC; i++) { ret += stored[i]; }
+        return -ret;
+    }
+
+    // It seems like the compare function is the only one that is used.
+    T norm(const T* a, size_t size) const
+    {
+        throw "Unsupported";
+    }
+
+    T dot(const T* a, const T* b, size_t size) const {
+        throw "Unsupported";
+    }
+};
+
 }
 #endif
