@@ -148,7 +148,7 @@ void end_train(void) {
         }
     }
 
-    efanna::Matrix<float> dataset(pointset.size(), d, raw_data);
+    efanna::Matrix<float> dataset(pointset.size(), padded_dimensions, raw_data);
     efanna::Distance<float>* distance_function;
     if (metric == "euclidean") {
         distance_function = new efanna::L2DistanceAVX<float>();
