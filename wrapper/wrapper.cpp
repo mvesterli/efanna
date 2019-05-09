@@ -115,6 +115,7 @@ bool end_configure(void) {
 static std::vector<std::vector<float>> pointset;
 
 std::vector<float> parseEntry(const char* entry) {
+  std::cerr << "insert raw: " << entry << std::endl;
   std::vector<float> e;
   std::string line(entry);
   float x;
@@ -122,6 +123,8 @@ std::vector<float> parseEntry(const char* entry) {
   while (sstr >> x) {
     e.push_back(x);
   }
+  for (float i : e) { std::cerr << i << " "; }
+  std::cerr << std::endl;
   return e;
 }
 
@@ -162,8 +165,8 @@ void end_train(void) {
     knn_index = new efanna::FIndex<float>(dataset, distance_function, params);
     knn_index->buildIndex();
 
-    pointset.clear();
-    pointset.shrink_to_fit();
+//    pointset.clear();
+//    pointset.shrink_to_fit();
 }
 
 bool prepare_query(const char* entry) {
@@ -173,12 +176,25 @@ bool prepare_query(const char* entry) {
 static int position;
 static std::vector<unsigned int> result;
 
+float dist(std::vector<float>& a, std::vector<float>& b) {
+    float res = 0;
+    for (size_t i=0; i < a.size(); i++) {
+        res += a[i]*b[i];
+    }
+    return res;
+}
+
 size_t query(const char* entry, size_t k) {
   unsigned int query_id;
   position = 0;
   auto sstr = std::istringstream(std::string(entry));
   sstr >> query_id;
   result = knn_index->getGraphRow(query_id);
+  std::cerr << result.size() << ": ";
+  for (auto i : result) {
+      std::cerr << i << "," << dist(pointset[query_id], pointset[i]) << " ";
+  }
+  std::cerr << std::endl;
   return result.size();
 }
 
