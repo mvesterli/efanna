@@ -418,5 +418,29 @@ public:
     }
 };
 
+template<typename T>
+class CosineSimilarity : public Distance<T> {
+public:
+    typedef T ResultType;
+
+    ResultType compare(const T* a, const T* b, size_t size) const{
+        ResultType res = 0;
+        for (size_t i=0; i < size; i++) {
+            res += a[i]*b[i];
+        }
+        return -res;
+    }
+
+    // It seems like the compare function is the only one that is used.
+    T norm(const T* a, size_t size) const
+    {
+        throw "Unsupported";
+    }
+
+    T dot(const T* a, const T* b, size_t size) const {
+        throw "Unsupported";
+    }
+};
+
 }
 #endif
