@@ -134,6 +134,20 @@ bool train(const char* entry) {
 static efanna::FIndex<float>* knn_index;
 
 void end_train(void) {
+    // Normalize data
+    if (metric == "angular") {
+        for (auto& vec : pointset) {
+            float square_sum = 0;
+            for (auto v : vec) {
+                square_sum += v*v;
+            }
+            float len = std::sqrt(square_sum);
+            for (auto& v : vec) {
+                v /= len;
+            }
+        }
+    }
+    
     size_t d = pointset[0].size();
     int padded_dimensions = (d+7)/8*8;
     float* raw_data = (float*) memalign(
