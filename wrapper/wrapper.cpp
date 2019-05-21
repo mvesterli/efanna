@@ -142,8 +142,10 @@ void end_train(void) {
                 square_sum += v*v;
             }
             float len = std::sqrt(square_sum);
-            for (auto& v : vec) {
-                v /= len;
+            if (len != 0) {
+                for (auto& v : vec) {
+                    v /= len;
+                }
             }
         }
     }
